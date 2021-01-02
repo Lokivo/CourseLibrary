@@ -36,7 +36,7 @@ namespace CourseLibrary.API.Controllers
             return Ok(this.mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo));
         }
 
-        [HttpGet("{authorId}", Name ="GetAuthor")]
+        [HttpGet("{authorId}", Name = "GetAuthor")]
         public IActionResult GetAuthor(Guid authorId)
         {
             var authorFromRepo = this.courseLibraryRepository.GetAuthor(authorId);
@@ -59,7 +59,7 @@ namespace CourseLibrary.API.Controllers
 
             var authorReturn = this.mapper.Map<AuthorDto>(authorEntity);
 
-            return CreatedAtRoute("GetAuthor", new { authorId = authorReturn.Id },authorReturn); ;
+            return CreatedAtRoute("GetAuthor", new { authorId = authorReturn.Id }, authorReturn); ;
         }
 
         [HttpOptions]
@@ -67,6 +67,23 @@ namespace CourseLibrary.API.Controllers
         {
             Response.Headers.Add("Allow", "GET,OPTIONS,POST");
             return Ok();
+        }
+
+        [HttpDelete("{authorId}")]
+        public IActionResult DeleteAuthor(Guid authorId)
+        {
+            var authorFromRepo = this.courseLibraryRepository.GetAuthor(authorId);
+
+            if (authorFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            this.courseLibraryRepository.DeleteAuthor(authorFromRepo);
+
+            this.courseLibraryRepository.Save();
+
+            return NoContent();
         }
     }
 }
